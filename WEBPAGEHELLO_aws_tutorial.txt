@@ -1,0 +1,79 @@
+Create a Webpage with Hello on it : 
+
+* 1st Task : Create your VPC
+	Services -> VPC(in the left) -> Launch VPC Wizard
+
+* 2nd : Create an Internet Gateway and link it to the right VPC
+
+* 3rd : Create a Route Table 
+	- Go to Routes -> Edit Routes -> Add route -> 0.0.0.0/0 and choose the right "igw-....."
+	- Go to Subnet Asoociation -> Edit -> choose the right subnet
+
+* 4th : Create a Security Group
+	- Go to Security Group (in the left) -> Create security group -> Description "Enable HTTP access" 
+	- For clarity put a name in "Name" -> Inbound Rules -> 
+	- Add HTTP (80) Anywhere 0.0.0.0/0
+	- Add SSH (22) Anywhere
+
+* 5th : Launch the EC2 instance 
+	- Service -> EC2 -> 
+	-Create Instance -> Select "Amazon Linux 2 AMI (HVM), SSD Volume Type" -> t2.micro 
+	- Configure Instance Details -> Select the network with the right VPC -> select the subnet
+	- Select Enable IP Assignation
+	- add tags : Name, WebPageExample
+	- Configure Security Group -> choose the right one -> Launch
+*6th :Puttygen and Putty
+	- Open PuttyGen -> Load -> put the path of the key -> Save Private Key
+	- Open Putty -> Session -> Fill the box of IP adress 
+	- Go to SSH -> Auth -> Give the right path of the right private PPK key -> Open 
+	- login as : ec2-user
+
+7th : Put the rith command query in order :
+	 sudo yum update -y    // for update to the last version and -y stands for "without asking permission"
+	sudo yum install -y httpd php
+	sudo service httpd start
+	sudo chkconfig httpd on*
+	sudo groupadd www
+	sudo usermod -a -G www ec2-user     // give access to www for ec2-user 
+	exit // for the refresh
+Then log back and query "groups" to see if the groups had been refreshed
+	sudo chown -R root:www /var/www      //  Change the group ownership of the /var/www directory and its contents to the www group:
+
+	 sudo chmod 2775 /var/www
+	 find /var/www -type d -exec sudo chmod 2775 {} +	// Change the directory permissions of /var/www and its subdirectories to add group write permissions 
+								and set the group ID on subdirectories created in the future
+
+	 find /var/www -type f -exec sudo chmod 0664 {} +       // change the permissions for files in the /var/www directory 
+								and its subdirectories to add group write permissions
+
+* 8th : Connect your Apache web server 
+
+	 cd /var/www
+	 mkdir inc
+	 cd inc        // change the directory and create a new subdirectory inc
+
+ 	>dbinfo.inc
+ 	nano dbinfo.inc   // Create a new file in the inc directory named dbinfo.inc
+				and edit the file by calling nano
+
+	- Return to var/html and create a new file "SamplePage.php"   (>SamplePage.php)
+	 and after, put : nano SamplePage.php
+
+	- Code the webpage as you want : 
+	<html>
+		<title>
+			"Hello"
+		</title>
+
+		<body>
+			<?php echo("Hello :)"); ?>
+		</body>
+	</html>
+
+and then Ctrl + X to save the file
+
+we can see our result by adding /SamplePage.php at the end of the url we were into. 
+
+It's working!!
+
+
