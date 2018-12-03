@@ -1,0 +1,25 @@
+Open Rstudio in the Browser AWS
+
+- Services -> EC2 -> Security Group -> Create one -> 
+	Name it, Describe it and add Type SSH (anywhere) & HTTP (anywhere)
+- create a new key or use a old one
+
+- Launching the instance
+	- Choose the AMI : "RStudio-...." -> check for the last version
+	- in the left, pick "Community AMIs" and search "RSTUDIO ASLETT" 
+	- take the last version
+	- Enable Auto-assign Public IP and choose the VPC and the subnet that you want
+	- In "Configure Secur. Group" : choose the SG that you created or create it now
+	 with 2 Types : SSH (anywhere) & HTTP (anywhere)
+
+	- Launch it
+	- Copy the public DNS and paste it into a new webpage
+	- log in !
+	- User : rstudio
+	- password is : go to your EC2 instance -> description -> 
+		copy "Instance ID" because it is your password !
+
+
+	
+
+						
