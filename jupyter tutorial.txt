@@ -1,0 +1,136 @@
+Jupyter notebook
+
+
+
+1/ Launch a basic EC2 instance but check the "auto-assign public IP" 
+	and add in security group the port 8888(port of jupyter)
+
+2/ connect to it through puttygen and putty
+
+3/ download anaconda installer on the machine by writing and type YES
+	wget https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh
+and install anaconda by tiping :
+	bash Anaconda3-4.4.0-Linux-x86_64.sh
+when it ask about PATH answer YES
+
+4/ enter those 2 command to switch to python3
+	which python /usr/bin/python
+	source .bashrc
+5/ We need to put a password because remember that Jupyter runs notebooks on a server which 
+anyone can access with an internet browser, so we need to set a password to prevent 
+any unauthorized access to our notebookseveryone can access to this 
+TO DO THAT we first need to access the IPYTHON console by typing
+	ipython
+
+6/ import the password module by typing 
+	from IPython.lib import passwd
+then 
+	passwd()
+enter a password and confirm it (normal if you dont see anything when you type) 
+and copy the output SHA like that
+	 Out[4]: 'sha1:0994f3bca11f:9e9a3e8c007feb18fa915e118e5f9740b21699bb'
+and then exit by typing "exit"
+
+
+7/ we need to Configure Jupyter/Ipython server to access your notebooks from your 
+local computer via your internet browser. First we’ll create a default config file by just typing:
+	jupyter notebook --generate-config
+
+we’ll need to generate SSL certificates so our browser will trust our 
+Jupyter Notebooks server (*sigh* I know). By typing :
+	mkdir certs
+	cd certs
+
+
+8/ we create our PEM file (this is separate from the PEM file on your 
+local computer which we downloaded from AWS):
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert.pem -out mycert.pem
+
+we need to enter some personal info
+
+[ec2-user@ip-172-31-0-106 certs]$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert.pem -out mycert.pem
+Generating a 1024 bit RSA private key
+.++++++
+........................++++++
+writing new private key to 'mycert.pem'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:FR
+State or Province Name (full name) []:Paris
+Locality Name (eg, city) [Default City]:Paris
+Organization Name (eg, company) [Default Company Ltd]:NONE
+Organizational Unit Name (eg, section) []:NONE
+Common Name (eg, your name or your server's hostname) []:ME
+Email Address []:email
+
+9/ go back to our home directory by typing : cd
+
+10/ Edit your Jupyter configuration file. 
+Let’s use vim to edit the configuration file we crated in the previous step
+	vim .jupyter/jupyter_notebook_config.py
+
+we need to enter this code, so press 'i' to input something and paste this anywhere (since all is in comment)
+
+	c = get_config()
+
+	# Kernel config
+	c.IPKernelApp.pylab = 'inline'  # if you want plotting support always in your notebook
+
+	# Notebook config
+	c.NotebookApp.certfile = u'/home/ec2-user/certs/mycert.pem' #location of your certificate file
+	c.NotebookApp.ip = '*'
+	c.NotebookApp.open_browser = False  #so that the ipython notebook does not opens up a browser by default
+	c.NotebookApp.password = u'sha1:0994f3bca11f:9e9a3e8c007feb18fa915e118e5f9740b21699bb'  #edit this with the SHA hash that you generated after typing in Step 9
+	# This is the port we opened in Step 3.
+	c.NotebookApp.port = 8888
+
+VERY IMPORTANT TO CHECK IF THERE IS ANY INDENTATION PROBLEM
+
+and after ctrl+c and then ESC and then we type : :wq
+
+11/ Create a folder for your notebooks and start Jupyter Notebook:
+
+	mkdir Notebooks
+	cd Notebooks
+
+we can open Jupyter Notebooks:
+
+	jupyter notebook
+
+12/ we can now access to the jupyter platform by typing in our browser :
+	https://ec2-34-245-19-198.eu-west-1.compute.amazonaws.com:8888/
+
+we will arrive on a unsafe page but at the bottom expand and proceed to the website
+
+DONT FORGET TO STOP THE INSTANCE WHEN YOU'VE FINISHED !
+
+NEXT STEP :
+
+you may want to save your models or objects to access them for later on another machine. 
+Also, you may need to import data from files on your machine to use on your EC2 notebooks. 
+To do this you just need the boto3 package and an S3 bucket. Setting up an S3 bucket is pretty simple and using boto3 is also very straight forward 
+so I will point you to boto3’s documentation for examples: https://boto3.readthedocs.io/en/latest/guide/quickstart.html#installation
+
+And here’s AWS’s documentation for getting started with S3: https://aws.amazon.com/documentation/s3/
+
+Just make sure to have your credentials properly stored. This is documented in the boto3 docs, 
+but you can also install the AWS CLI for easy configuration an access of AWS 
+from the command line: https://aws.amazon.com/cli/
+
+
+
+
+
+
+
+
+
+
+
+
