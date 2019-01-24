@@ -2,7 +2,7 @@ Jupyter notebook
 *
 
 
-1/ Launch a basic EC2 instance but check the "auto-assign public IP" 
+1/ Launch a basic AMazon Linux (i took the 2nd Linux) EC2 instance but check the "auto-assign public IP" 
 	and add in security group the port 8888(port of jupyter)
 
 2/ connect to it through puttygen and putty
